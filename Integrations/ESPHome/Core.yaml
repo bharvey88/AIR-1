@@ -124,7 +124,6 @@ number:
   - platform: template
     name: "SEN55 K Coefficient"
     id: sen55_k_coefficient
-    disabled_by_default: true
     restore_value: true
     initial_value: 0.535
     min_value: 0.0
@@ -138,7 +137,6 @@ number:
   - platform: template
     name: "SEN55 J Coefficient"
     id: sen55_j_coefficient
-    disabled_by_default: true
     restore_value: true
     initial_value: 0.231
     min_value: 0.0
@@ -328,7 +326,6 @@ sensor:
   - platform: template
     name: "SEN55 Corrected Temperature"
     id: sen55_corrected_temperature
-    disabled_by_default: true
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
@@ -368,7 +365,6 @@ sensor:
   - platform: template
     name: "SEN55 Corrected Humidity"
     id: sen55_corrected_humidity
-    disabled_by_default: true
     unit_of_measurement: "%"
     device_class: humidity
     state_class: measurement
@@ -407,7 +403,6 @@ sensor:
   - platform: template
     name: "SCD40 Corrected Humidity"
     id: scd40_corrected_humidity
-    disabled_by_default: true
     unit_of_measurement: "%"
     device_class: humidity
     state_class: measurement
