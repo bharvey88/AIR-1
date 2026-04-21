@@ -217,6 +217,14 @@ sensor:
     co2:
       name: "CO2"
       id: "co2"
+    temperature:
+      name: "SCD40 Temperature"
+      id: scd40temperature
+      accuracy_decimals: 2
+    humidity:
+      name: "SCD40 Humidity"
+      id: scd40humidity
+      accuracy_decimals: 1
     automatic_self_calibration: false
     update_interval: 60s
     measurement_mode: "periodic"
@@ -233,7 +241,9 @@ sensor:
             float offset = id(dps310_pressure_offset).state;
             return isnan(offset) ? x : x + offset;
     temperature:
+      name: "DPS310 Temperature"
       id: dps310temperature
+      accuracy_decimals: 2
     update_interval: 30s
     i2c_id: bus_a
 
