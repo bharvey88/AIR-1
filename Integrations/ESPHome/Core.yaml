@@ -122,6 +122,34 @@ number:
     mode: box
 
   - platform: template
+    name: "SEN55 K Coefficient"
+    id: sen55_k_coefficient
+    disabled_by_default: true
+    restore_value: true
+    initial_value: 0.535
+    min_value: 0.0
+    max_value: 2.0
+    entity_category: "CONFIG"
+    optimistic: true
+    update_interval: never
+    step: 0.001
+    mode: box
+
+  - platform: template
+    name: "SEN55 J Coefficient"
+    id: sen55_j_coefficient
+    disabled_by_default: true
+    restore_value: true
+    initial_value: 0.231
+    min_value: 0.0
+    max_value: 2.0
+    entity_category: "CONFIG"
+    optimistic: true
+    update_interval: never
+    step: 0.001
+    mode: box
+
+  - platform: template
     name: "Sleep Duration"
     id: deep_sleep_sleep_duration
     min_value: 0
@@ -296,6 +324,46 @@ sensor:
     store_baseline: true
     address: 0x69
     update_interval: 10s
+
+  - platform: template
+    name: "SEN55 Corrected Temperature"
+    id: sen55_corrected_temperature
+    disabled_by_default: true
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    lambda: |-
+      // Dynamic self-heating correction for SEN55 temperature.
+      // Uses DPS310 and SCD40 temperatures as cooler thermal references
+      // to estimate SEN55 self-heating error.
+      // Formula: corrected = raw - (0.72*k*(dps-raw) + 0.28*j*(scd-raw))
+      // Requires sen55_temperature_offset = 0 and Prevent Sleep = on for
+      // meaningful results (algorithm needs thermal steady state).
+      float sen_published = id(sen55_temperature).state;
+      float static_offset = id(sen55_temperature_offset).state;
+      float raw = sen_published + (isnan(static_offset) ? 0.0f : static_offset);
+
+      float dps = id(dps310temperature).state;
+      float scd = id(scd40temperature).state;
+
+      if (isnan(raw) || isnan(dps) || isnan(scd)) {
+        return NAN;
+      }
+
+      float grad_dps = dps - raw;
+      if (grad_dps < 0.5f) {
+        // Insufficient thermal gradient - ESP32 not warmed up enough
+        return raw;
+      }
+
+      float grad_scd = scd - raw;
+      float k = id(sen55_k_coefficient).state;
+      float j = id(sen55_j_coefficient).state;
+      float correction = 0.72f * k * grad_dps + 0.28f * j * grad_scd;
+
+      return raw - correction;
 
   - platform: template
     name: "PM 0.3 To 1 µm"
@@ -593,3 +661,4 @@ script:
       - component.update: pm2_5_to_4
       - component.update: pm4_to_10
       - component.update: voc_quality
+      - component.update: sen55_corrected_temperature
