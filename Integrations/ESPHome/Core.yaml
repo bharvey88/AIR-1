@@ -366,6 +366,76 @@ sensor:
       return raw - correction;
 
   - platform: template
+    name: "SEN55 Corrected Humidity"
+    id: sen55_corrected_humidity
+    disabled_by_default: true
+    unit_of_measurement: "%"
+    device_class: humidity
+    state_class: measurement
+    accuracy_decimals: 1
+    update_interval: 10s
+    lambda: |-
+      // Corrects SEN55 relative humidity for self-heating using the Magnus
+      // formula for saturation vapor pressure. A sensor sitting above room
+      // temperature reads lower RH than the actual room air, because the
+      // same absolute water content maps to lower RH at higher temperature.
+      //   RH_corrected = RH_raw * P_sat(T_sensor) / P_sat(T_room)
+      //   P_sat(T) = 6.112 * exp(17.62*T / (243.12 + T))
+      float hum_published = id(sen55_humidity).state;
+      float hum_offset = id(sen55_humidity_offset).state;
+      float raw_hum = hum_published + (isnan(hum_offset) ? 0.0f : hum_offset);
+
+      float temp_published = id(sen55_temperature).state;
+      float temp_offset = id(sen55_temperature_offset).state;
+      float raw_temp = temp_published + (isnan(temp_offset) ? 0.0f : temp_offset);
+
+      float corrected_temp = id(sen55_corrected_temperature).state;
+
+      if (isnan(raw_hum) || isnan(raw_temp) || isnan(corrected_temp)) {
+        return NAN;
+      }
+
+      float p_sat_sensor = 6.112f * expf(17.62f * raw_temp / (243.12f + raw_temp));
+      float p_sat_room = 6.112f * expf(17.62f * corrected_temp / (243.12f + corrected_temp));
+
+      float corrected = raw_hum * p_sat_sensor / p_sat_room;
+
+      if (corrected > 100.0f) corrected = 100.0f;
+      if (corrected < 0.0f) corrected = 0.0f;
+      return corrected;
+
+  - platform: template
+    name: "SCD40 Corrected Humidity"
+    id: scd40_corrected_humidity
+    disabled_by_default: true
+    unit_of_measurement: "%"
+    device_class: humidity
+    state_class: measurement
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      // Same Magnus-formula correction applied to SCD40 humidity. Uses the
+      // corrected SEN55 temperature as the "true ambient" reference, on the
+      // assumption that air inside the Air-1 case is well-mixed and both
+      // sensors see the same absolute water content.
+      float raw_hum = id(scd40humidity).state;
+      float raw_temp = id(scd40temperature).state;
+      float room_temp = id(sen55_corrected_temperature).state;
+
+      if (isnan(raw_hum) || isnan(raw_temp) || isnan(room_temp)) {
+        return NAN;
+      }
+
+      float p_sat_sensor = 6.112f * expf(17.62f * raw_temp / (243.12f + raw_temp));
+      float p_sat_room = 6.112f * expf(17.62f * room_temp / (243.12f + room_temp));
+
+      float corrected = raw_hum * p_sat_sensor / p_sat_room;
+
+      if (corrected > 100.0f) corrected = 100.0f;
+      if (corrected < 0.0f) corrected = 0.0f;
+      return corrected;
+
+  - platform: template
     name: "PM 0.3 To 1 µm"
     id: pm0_3_to_1
     disabled_by_default: true
@@ -662,3 +732,5 @@ script:
       - component.update: pm4_to_10
       - component.update: voc_quality
       - component.update: sen55_corrected_temperature
+      - component.update: sen55_corrected_humidity
+      - component.update: scd40_corrected_humidity
