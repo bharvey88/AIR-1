@@ -384,6 +384,7 @@ sensor:
             float offset = id(dps310_pressure_offset).state;
             return isnan(offset) ? x : x + offset;
     temperature:
+      name: "DPS310 Temperature"
       id: dps310temperature
     update_interval: 30s
     i2c_id: bus_a
