@@ -84,7 +84,7 @@ number:
     name: SEN55 Temperature Offset
     id: sen55_temperature_offset
     restore_value: true
-    initial_value: 6.0
+    initial_value: 0.0
     min_value: -70.0
     max_value: 70.0
     entity_category: "CONFIG"
