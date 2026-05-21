@@ -356,6 +356,8 @@ sensor:
 
   - platform: scd4x
     id: scd40
+    #Positive number decreases temperature output
+    temperature_offset: 0.0
     co2:
       name: "CO2"
       id: "co2"
@@ -392,6 +394,10 @@ sensor:
 
   - platform: sen5x
     id: sen55
+    temperature_compensation:
+      offset: 0
+      normalized_offset_slope: 0
+      time_constant: 0
     pm_1_0:
       name: "PM <1µm Weight concentration"
       id: pm_1_0
