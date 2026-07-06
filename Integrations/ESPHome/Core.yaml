@@ -1,6 +1,6 @@
 substitutions:
   name: apollo-air-1
-  version: "26.7.4.1"
+  version: "26.7.6.1"
   device_description: ${name} made by Apollo Automation - version ${version}.
   # Default OTA password. Override in your device YAML by re-declaring
   # `substitutions: { ota_password: !secret <name>_ota_password }` so each
@@ -637,7 +637,7 @@ script:
           if (beta) {
             url = ble
               ? "${beta_manifest_base}/manifest-ble.json"
-              : "${beta_manifest_base}/manifest-factory.json";
+              : "${beta_manifest_base}/manifest-standard.json";
           } else {
             url = ble
               ? "${stable_manifest_base}/firmware-ble/manifest.json"
