@@ -1,6 +1,6 @@
 substitutions:
   name: apollo-air-1
-  version: "26.7.7.1"
+  version: "26.7.7.3"
   device_description: ${name} made by Apollo Automation - version ${version}.
   # Default OTA password. Override in your device YAML by re-declaring
   # `substitutions: { ota_password: !secret <name>_ota_password }` so each
@@ -11,8 +11,8 @@ substitutions:
   ble_firmware: "false"
   # Manifest URL bases. Stable = GitHub Pages (main branch builds).
   # Beta = rolling "beta" pre-release assets (beta branch builds).
-  stable_manifest_base: "https://apolloautomation.github.io/AIR-1"
-  beta_manifest_base: "https://github.com/ApolloAutomation/AIR-1/releases/download/beta"
+  stable_manifest_base: "https://bharvey88.github.io/AIR-1"
+  beta_manifest_base: "https://github.com/bharvey88/AIR-1/releases/download/beta"
 
 esphome:
   # List form so package merging concatenates with each variant's own on_boot
