@@ -487,14 +487,10 @@ button:
       - delay: 3s
       - script.execute: apply_ota_source
       - script.wait: apply_ota_source
-<<<<<<< HEAD
-      - delay: 2s
-=======
       # The manifest fetch runs in its own task and YAML has no "fetch done"
       # condition to wait on (update.is_available stays false for same-version
       # variant switches), so give it a fixed window like R_PRO-1/CAST-1 do.
       - delay: 5s
->>>>>>> firmware-channel-test
       - update.perform:
           id: update_http_request
           force_update: true
@@ -506,8 +502,6 @@ button:
             esp32_ble::global_ble->enable();
           }
           #endif
-<<<<<<< HEAD
-=======
       - if:
           condition:
             and:
@@ -516,7 +510,6 @@ button:
           then:
             - lambda: |-
                 id(deep_sleep_1).allow_deep_sleep();
->>>>>>> firmware-channel-test
 
 text_sensor:
     # Convert VOC Index To Text: 
@@ -649,13 +642,8 @@ script:
     # Stable = GitHub Pages, Beta = rolling "beta" release assets.
     then:
       - lambda: |-
-<<<<<<< HEAD
-          const bool ble  = id(firmware_ble).state == "Enabled";
-          const bool beta = id(firmware_channel).state == "Beta";
-=======
           const bool ble  = id(firmware_ble).current_option() == "Enabled";
           const bool beta = id(firmware_channel).current_option() == "Beta";
->>>>>>> firmware-channel-test
           std::string url;
           if (beta) {
             url = ble
