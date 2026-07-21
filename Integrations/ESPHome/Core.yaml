@@ -9,6 +9,13 @@ esp32:
   framework:
     type: esp-idf
 
+# Test build: pull the sen5x component with model override support so units
+# whose product name register reports SEN54 can be forced to SEN55.
+external_components:
+  - source: github://bharvey88/esphome@sen5x-model-override
+    components: [sen5x, sensirion_common]
+    refresh: 0s
+
 api:
   on_client_connected:
     - delay: 90s
@@ -284,6 +291,7 @@ sensor:
       id: sen55_nox
     acceleration_mode: low
     store_baseline: true
+    model: sen55
     address: 0x69
     update_interval: 10s
 
